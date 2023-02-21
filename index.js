@@ -1,5 +1,6 @@
 const inquirer = require("inquirer");
 const cTable = require("console.table");
+const { viewEmployees } = require("./utils/utilities");
 
 const startMenu = [
   {
@@ -28,6 +29,11 @@ async function menuPrompts() {
   let exit = false;
   do {
     let answers = await inquirer.prompt(startMenu);
+    console.info("testing");
+    console.info(answers);
+    // if (answers.initialChoice === "View All Employees") {
+    //   await viewEmployees();
+    // }
     exit = answers.initialChoice === "Quit" ? true : false;
   } while (!exit);
 }
