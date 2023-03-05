@@ -20,9 +20,9 @@ const startMenu = [
     message: "What would you like to do?",
     name: "initialChoice",
     choices: [
-      "View All Employees",
-      "Add Employee",
-      "Update Employee Role",
+      "View All Employees", //
+      "Add Employee", //
+      "Update Employee Role", //
       "View All Roles",
       "Add Role",
       "View All Departments",
@@ -54,7 +54,7 @@ const addEmployee = [
     name: "addEmployee4",
   },
 ];
-const updateRole = [];
+
 function menuPrompts() {
   inquirer.prompt(startMenu).then((answers) => {
     switch (answers.initialChoice) {
@@ -66,6 +66,9 @@ function menuPrompts() {
         break;
       case "Update Employee Role":
         updateEmployeePrompt();
+        break;
+      case "View All Roles":
+        viewAllRoles();
         break;
 
       default:
@@ -175,6 +178,20 @@ const updateEmployeePrompt = () => {
         });
     }
   });
+};
+
+const viewAllRoles = () => {
+  db.query(
+    "SELECT role.id, role.title, department.name AS department, role.salary FROM role JOIN department ON role.department_id = department.id",
+    (err, data) => {
+      if (err) {
+        throw err;
+      } else {
+        console.table(data);
+      }
+      menuPrompts();
+    }
+  );
 };
 
 menuPrompts();
