@@ -54,7 +54,7 @@ const addEmployee = [
     name: "addEmployee4",
   },
 ];
-
+const updateRole = [];
 function menuPrompts() {
   inquirer.prompt(startMenu).then((answers) => {
     switch (answers.initialChoice) {
@@ -62,7 +62,10 @@ function menuPrompts() {
         viewEmployees();
         break;
       case "Add Employee":
-        addEmployee();
+        addEmployeePrompt();
+        break;
+      case "Update Employee Role":
+        updateEmployeePrompt();
         break;
 
       default:
@@ -98,9 +101,79 @@ const addEmployeePrompt = () => {
       ],
       (err, res) => {
         if (err) throw err;
-        console.log("Successfully created Employee")
+        console.log("Successfully created Employee");
       }
     );
+    menuPrompts();
+  });
+};
+
+const updateEmployeePrompt = () => {
+  const employeeList = [];
+  const roleList = [];
+  let employeeId = 0;
+  let roleId = 0;
+
+  db.query("SELECT * FROM employee", (err, data) => {
+    if (err) {
+      throw err;
+    } else {
+      for (let index = 0; index < data.length; index++) {
+        employeeList.push(
+          data[index].id +
+            " " +
+            data[index].first_name +
+            " " +
+            data[index].last_name
+        );
+      }
+      inquirer
+        .prompt([
+          {
+            type: "list",
+            message: "Which Employee's role needs updated?",
+            name: "update1",
+            choices() {
+              return employeeList;
+            },
+          },
+        ])
+        .then((answers) => {
+          employeeId = Number(answers.update1.split(" ")[0]);
+          console.log(employeeId);
+          db.query("SELECT * FROM role", (err, data) => {
+            if (err) {
+              throw err;
+            } else {
+              for (let index = 0; index < data.length; index++) {
+                roleList.push(data[index].id + " " + data[index].title);
+              }
+              inquirer
+                .prompt([
+                  {
+                    type: "list",
+                    message:
+                      "Which role do you want to assign the selected employee?",
+                    name: "update2",
+                    choices() {
+                      return roleList;
+                    },
+                  },
+                ])
+                .then((answers) => {
+                  roleId = Number(answers.update2.split(" ")[0]);
+                  db.query(
+                    `UPDATE employee SET role_id = ${roleId} WHERE id = ${employeeId}`
+                  );
+                })
+                .then((answers) => {
+                  console.log("Role Successfully Updated");
+                  menuPrompts();
+                });
+            }
+          });
+        });
+    }
   });
 };
 
