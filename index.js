@@ -23,7 +23,7 @@ const startMenu = [
       "View All Employees", //
       "Add Employee", //
       "Update Employee Role", //
-      "View All Roles",
+      "View All Roles", //
       "Add Role",
       "View All Departments",
       "Add Department",
@@ -70,7 +70,15 @@ function menuPrompts() {
       case "View All Roles":
         viewAllRoles();
         break;
-
+      case "Add Role":
+        addRole();
+        break;
+      case "View All Departments":
+        viewAllDepartments();
+        break;
+      case "Add Deparment":
+        addDepartment();
+        break;
       default:
         console.log("Have a good day!");
         process.exit();
@@ -192,6 +200,20 @@ const viewAllRoles = () => {
       menuPrompts();
     }
   );
+};
+
+const viewAllDepartments = () => {
+  db.query(
+    "SELECT * FROM department",
+    (err, data) => {
+      if (err) {
+        throw err;
+      } else {
+        console.table(data);
+      }
+      menuPrompts();
+    } 
+  )
 };
 
 menuPrompts();
