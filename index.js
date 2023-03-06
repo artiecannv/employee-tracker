@@ -22,7 +22,7 @@ const startMenu = [
       "View All Roles", //
       "Add Role",
       "View All Departments", //
-      "Add Department",
+      "Add Department", //
       "Quit", //
     ],
   },
@@ -60,6 +60,29 @@ const addDepartmentPrompt = [
     name: "newDepartment",
   },
 ];
+
+// const addRolePrompt = [
+//   {
+//     type: "input",
+//     message: "What is the title of the new role?",
+//     name: "newRole_title",
+//   },
+//   {
+//     type: "input",
+//     message: "What salary will be for this role?",
+//     name: "newRole_salary",
+//   },
+//   {
+//     type: "list",
+//     message: "What department does this role belong to?",
+//     name: "newRole_department_id",
+//     choices: function () {
+//       return getDepartment();
+//     },
+//   },
+// ];
+
+// Menu
 
 function menuPrompts() {
   inquirer.prompt(startMenu).then((answers) => {
@@ -208,6 +231,16 @@ const viewAllRoles = () => {
       menuPrompts();
     }
   );
+};
+
+//! Working on getting this working
+
+const addRole = () => {
+  db.query("SELECT name, id AS value FROM department").then((departmentIds) => {
+    console.log(departmentIds);
+  });
+
+  menuPrompts();
 };
 
 const viewAllDepartments = () => {
