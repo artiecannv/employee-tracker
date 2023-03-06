@@ -10,10 +10,6 @@ const db = mysql.createConnection({
   database: process.env.DB_NAME,
 });
 
-// db.connect(function(error) {
-//   if (error) throw error
-// });
-
 const startMenu = [
   {
     type: "list",
@@ -25,14 +21,16 @@ const startMenu = [
       "Update Employee Role", //
       "View All Roles", //
       "Add Role",
-      "View All Departments",
+      "View All Departments", //
       "Add Department",
-      "Quit",
+      "Quit", //
     ],
   },
 ];
 
-const addEmployee = [
+// Prompts
+
+const addEmployeePrompt = [
   {
     type: "input",
     message: "What is the employee's first name?",
@@ -55,6 +53,14 @@ const addEmployee = [
   },
 ];
 
+const addDepartmentPrompt = [
+  {
+    type: "input",
+    message: "What is the name of this Department?",
+    name: "newDepartment",
+  },
+];
+
 function menuPrompts() {
   inquirer.prompt(startMenu).then((answers) => {
     switch (answers.initialChoice) {
@@ -62,10 +68,10 @@ function menuPrompts() {
         viewEmployees();
         break;
       case "Add Employee":
-        addEmployeePrompt();
+        addEmployee();
         break;
       case "Update Employee Role":
-        updateEmployeePrompt();
+        updateEmployee();
         break;
       case "View All Roles":
         viewAllRoles();
@@ -76,7 +82,7 @@ function menuPrompts() {
       case "View All Departments":
         viewAllDepartments();
         break;
-      case "Add Deparment":
+      case "Add Department":
         addDepartment();
         break;
       default:
@@ -85,6 +91,8 @@ function menuPrompts() {
     }
   });
 }
+
+// Functions
 
 const viewEmployees = () => {
   db.query(
@@ -100,8 +108,8 @@ const viewEmployees = () => {
   );
 };
 
-const addEmployeePrompt = () => {
-  inquirer.prompt(addEmployee).then((answers) => {
+const addEmployee = () => {
+  inquirer.prompt(addEmployeePrompt).then((answers) => {
     db.query(
       "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)",
       [
@@ -119,7 +127,7 @@ const addEmployeePrompt = () => {
   });
 };
 
-const updateEmployeePrompt = () => {
+const updateEmployee = () => {
   const employeeList = [];
   const roleList = [];
   let employeeId = 0;
@@ -203,17 +211,28 @@ const viewAllRoles = () => {
 };
 
 const viewAllDepartments = () => {
-  db.query(
-    "SELECT * FROM department",
-    (err, data) => {
-      if (err) {
-        throw err;
-      } else {
-        console.table(data);
+  db.query("SELECT * FROM department", (err, data) => {
+    if (err) {
+      throw err;
+    } else {
+      console.table(data);
+    }
+    menuPrompts();
+  });
+};
+
+const addDepartment = () => {
+  inquirer.prompt(addDepartmentPrompt).then((answers) => {
+    db.query(
+      "INSERT INTO department (name) VALUES (?)",
+      [answers.newDepartment],
+      (err, res) => {
+        if (err) throw err;
+        console.log("Successfully created Department");
       }
-      menuPrompts();
-    } 
-  )
+    );
+    menuPrompts();
+  });
 };
 
 menuPrompts();
