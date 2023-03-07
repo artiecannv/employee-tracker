@@ -61,27 +61,6 @@ const addDepartmentPrompt = [
   },
 ];
 
-// const addRolePrompt = [
-//   {
-//     type: "input",
-//     message: "What is the title of the new role?",
-//     name: "newRole_title",
-//   },
-//   {
-//     type: "input",
-//     message: "What salary will be for this role?",
-//     name: "newRole_salary",
-//   },
-//   {
-//     type: "list",
-//     message: "What department does this role belong to?",
-//     name: "newRole_department_id",
-//     choices: function () {
-//       return getDepartment();
-//     },
-//   },
-// ];
-
 // Menu
 
 function menuPrompts() {
@@ -233,14 +212,54 @@ const viewAllRoles = () => {
   );
 };
 
-//! Working on getting this working
-
 const addRole = () => {
-  db.query("SELECT name, id AS value FROM department").then((departmentIds) => {
-    console.log(departmentIds);
+  const departmentList = [];
+  db.query("SELECT * FROM department", (err, data) => {
+    if (err) {
+      throw err;
+    } else {
+      for (let index = 0; index < data.length; index++) {
+        departmentList.push(data[index].id + " " + data[index].name);
+      }
+      inquirer
+        .prompt([
+          {
+            type: "input",
+            message: "New role title?",
+            name: "newRole_title",
+          },
+          {
+            type: "number",
+            message: "what is the salary?",
+            name: "newRole_salary",
+          },
+          {
+            type: "list",
+            message: "Which department uses the new role?",
+            name: "departmentId",
+            choices() {
+              return departmentList;
+            },
+          },
+        ])
+        .then((answers) => {
+          console.log(answers);
+          db.query(
+            "INSERT INTO employee (title, salary, departmentId) VALUES (?,?,?)",
+            [
+              answers.newRole_title,
+              answers.newRole_salary,
+              answers.departmentId,
+            ],
+            (err, res) => {
+              if (err) throw err;
+              console.log("Successfully created role");
+            }
+          );
+          menuPrompts();
+        });
+    }
   });
-
-  menuPrompts();
 };
 
 const viewAllDepartments = () => {
