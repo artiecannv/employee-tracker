@@ -243,21 +243,21 @@ const addRole = () => {
           },
         ])
         .then((answers) => {
-          console.log(answers);
+          let splitter = answers.departmentId.split(' ')[0];
           db.query(
-            "INSERT INTO employee (title, salary, departmentId) VALUES (?,?,?)",
+            "INSERT INTO role (title, salary, department_id) VALUES (?,?,?)",
             [
               answers.newRole_title,
               answers.newRole_salary,
-              answers.departmentId,
+              splitter,
             ],
             (err, res) => {
               if (err) throw err;
               console.log("Successfully created role");
             }
           );
-          menuPrompts();
-        });
+        })
+        .then(() => menuPrompts());
     }
   });
 };
